@@ -1,8 +1,9 @@
 import bycript from 'bcrypt';
 import { Schema, model } from 'mongoose';
 import config from '../../config';
-import { TUser } from './users.interface';
-const UserSchema = new Schema<TUser>({
+import { TUser, UserModel } from './users.interface';
+
+const userSchema = new Schema<TUser, UserModel>({
   userId: {
     type: Number,
     unique: true,
@@ -37,17 +38,34 @@ const UserSchema = new Schema<TUser>({
     city: String,
     country: String,
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // hashing passowrd function
-UserSchema.pre('save', async function () {
+userSchema.pre('save', async function (next) {
   const user = this;
   user.password = await bycript.hash(
     user.password,
     Number(config.bycript_salt_rounds),
   );
+  next();
+});
+// hashing passowrd function
+userSchema.pre('updateOne', async function () {
+  console.log(this);
 });
 
-const UserModel = model<TUser>('User', UserSchema);
+//  creating a static method for checking if a user exist or not
+userSchema.statics.isUserExists = async function (userId: number) {
+  const existingUser = await User.findOne({
+    userId: userId,
+    isDeleted: { $eq: false },
+  });
+  return existingUser;
+};
+const User = model<TUser, UserModel>('User', userSchema);
 
-export default UserModel;
+export default User;

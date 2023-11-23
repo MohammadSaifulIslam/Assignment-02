@@ -1,3 +1,5 @@
+import { Model } from 'mongoose';
+
 export type TUser = {
   userId: number;
   username: string;
@@ -15,4 +17,10 @@ export type TUser = {
     city: string;
     country: string;
   };
+  isDeleted: boolean;
 };
+
+// for creating static methood
+export interface UserModel extends Model<TUser> {
+  isUserExists(id: string): Promise<TUser | null>;
+}

@@ -30,6 +30,7 @@ const UsersValidationSchema = z.object({
     city: z.string(),
     country: z.string(),
   }),
+  isDeleted: z.boolean().default(false),
 });
 
 export default UsersValidationSchema;
