@@ -1,7 +1,7 @@
 import z from 'zod';
 
 const UsersValidationSchema = z.object({
-  userId: z.number().int('User ID must be an integer'),
+  userId: z.number(),
   username: z
     .string()
     .min(1, 'Username must have at least 1 character')

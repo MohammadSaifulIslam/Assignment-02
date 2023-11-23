@@ -1,6 +1,7 @@
+import bycript from 'bcrypt';
 import { Schema, model } from 'mongoose';
+import config from '../../config';
 import { TUser } from './users.interface';
-
 const UserSchema = new Schema<TUser>({
   userId: {
     type: Number,
@@ -38,10 +39,14 @@ const UserSchema = new Schema<TUser>({
   },
 });
 
-// UsersSchema.pre('save', function(){
-//     const user = this;
-
-// })
+// hashing passowrd function
+UserSchema.pre('save', async function () {
+  const user = this;
+  user.password = await bycript.hash(
+    user.password,
+    Number(config.bycript_salt_rounds),
+  );
+});
 
 const UserModel = model<TUser>('User', UserSchema);
 
