@@ -1,4 +1,5 @@
 import { Model } from 'mongoose';
+import { TOrder } from '../orders/orders.interface';
 
 export type TUser = {
   userId: number;
@@ -17,6 +18,7 @@ export type TUser = {
     city: string;
     country: string;
   };
+  orders?: TOrder[];
   isDeleted: boolean;
 };
 

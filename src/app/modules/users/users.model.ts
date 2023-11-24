@@ -1,6 +1,7 @@
 import bycript from 'bcrypt';
 import { Schema, model } from 'mongoose';
 import config from '../../config';
+import { TOrder } from '../orders/orders.interface';
 import { TUser, UserModel } from './users.interface';
 
 const userSchema = new Schema<TUser, UserModel>({
@@ -38,6 +39,7 @@ const userSchema = new Schema<TUser, UserModel>({
     city: String,
     country: String,
   },
+  orders: Array<TOrder>,
   isDeleted: {
     type: Boolean,
     default: false,
@@ -52,10 +54,6 @@ userSchema.pre('save', async function (next) {
     Number(config.bycript_salt_rounds),
   );
   next();
-});
-// hashing passowrd function
-userSchema.pre('updateOne', async function () {
-  console.log(this);
 });
 
 //  creating a static method for checking if a user exist or not
