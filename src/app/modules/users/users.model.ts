@@ -1,8 +1,23 @@
 import bycript from 'bcrypt';
 import { Schema, model } from 'mongoose';
 import config from '../../config';
-import { TOrder } from '../orders/orders.interface';
-import { TUser, UserModel } from './users.interface';
+
+import { TOrder, TUser, UserModel } from './users.interface';
+
+export const orderSchema = new Schema<TOrder>({
+  productName: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+  },
+});
 
 const userSchema = new Schema<TUser, UserModel>({
   userId: {

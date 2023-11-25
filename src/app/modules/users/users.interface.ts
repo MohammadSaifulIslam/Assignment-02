@@ -1,5 +1,9 @@
 import { Model } from 'mongoose';
-import { TOrder } from '../orders/orders.interface';
+export type TOrder = {
+  productName: string;
+  price: number;
+  quantity: number;
+};
 
 export type TUser = {
   userId: number;
