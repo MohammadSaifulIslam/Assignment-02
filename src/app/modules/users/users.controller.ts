@@ -12,7 +12,7 @@ const createUser = async (req: Request, res: Response) => {
     console.log(userdata);
     res.status(200).json({
       status: true,
-      message: 'User successfully created',
+      message: 'User created successfully',
       data: result,
     });
   } catch (error) {
@@ -29,7 +29,7 @@ const getAllUser = async (req: Request, res: Response) => {
   try {
     res.status(200).json({
       status: true,
-      message: 'Users successfully retrived',
+      message: 'Users retrived successfully',
       data: result,
     });
   } catch (error) {
@@ -50,7 +50,7 @@ const getSingleUser = async (req: Request, res: Response) => {
       const result = await userServices.getSingleUserFromDb(Number(userId));
       res.status(200).json({
         status: true,
-        message: 'User successfully retrived',
+        message: 'User retrived successfully',
         data: result,
       });
     } catch (err) {
@@ -78,19 +78,26 @@ const getSingleUser = async (req: Request, res: Response) => {
 const updateSingleUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const userData = req.body;
-
   const isUserExists = await User.isUserExists(userId);
   if (isUserExists) {
     try {
+      const userDataValidation = UsersValidationSchema.parse(userData);
       const result = await userServices.updateSingleUserIntoDb(
         Number(userId),
-        userData,
+        userDataValidation,
       );
-      res.status(200).json({
-        status: true,
-        message: 'User successfully updated',
-        data: result,
-      });
+
+      // find new updated user to send in the response data
+      if (result) {
+        const findUpdatedUser = await userServices.getSingleUserFromDb(
+          Number(userId),
+        );
+        res.status(200).json({
+          status: true,
+          message: 'User updated successfully',
+          data: findUpdatedUser,
+        });
+      }
     } catch (err) {
       res.status(404).json({
         success: false,
@@ -122,7 +129,7 @@ const deleteUser = async (req: Request, res: Response) => {
     try {
       res.status(200).json({
         status: true,
-        message: 'Users successfully deleted',
+        message: 'Users deleted successfully',
         data: result,
       });
     } catch (error) {
@@ -158,7 +165,7 @@ const addOrder = async (req: Request, res: Response) => {
       );
       res.status(200).json({
         status: true,
-        message: 'Order successfully added',
+        message: 'Order added successfully',
         data: result,
       });
     } catch (err) {
@@ -192,7 +199,7 @@ const getAllOrders = async (req: Request, res: Response) => {
       const result = await userServices.getAllOrdersFromDb(Number(userId));
       res.status(200).json({
         status: true,
-        message: 'Order successfully retrived',
+        message: 'Order retrived successfully',
         data: result,
       });
     } catch (err) {
@@ -228,7 +235,7 @@ const getTotalPriceOfOrders = async (req: Request, res: Response) => {
       );
       res.status(200).json({
         status: true,
-        message: 'Total price successfully retrived',
+        message: 'Total price retrived successfully',
         data: result,
       });
     } catch (err) {

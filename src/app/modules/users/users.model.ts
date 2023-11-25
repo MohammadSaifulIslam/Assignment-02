@@ -71,11 +71,6 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-userSchema.post('save', function (doc, next) {
-  doc.set({ password: undefined, orders: undefined, isDeleted: undefined });
-  next();
-});
-
 //  creating a static method for checking if a user exist or not
 userSchema.statics.isUserExists = async function (userId: number) {
   const existingUser = await User.findOne({

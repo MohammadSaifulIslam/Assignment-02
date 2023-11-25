@@ -35,7 +35,10 @@ const updateSingleUserIntoDb = async (
   userId: number,
   updatedUserData: TUser,
 ) => {
-  const result = await User.updateOne({ userId }, { ...updatedUserData });
+  const result = await User.findOneAndUpdate(
+    { userId },
+    { ...updatedUserData },
+  );
   return result;
 };
 
