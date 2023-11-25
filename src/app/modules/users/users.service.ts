@@ -8,8 +8,16 @@ const createUserIntoDb = async (user: TUser) => {
 
 const getAllUserFromDb = async () => {
   const result = await User.aggregate([
-    // { $match: { isDeleted: { $eq: false } } },
-    { $project: { username: 1, fullName: 1, age: 1, email: 1, address: 1 } },
+    { $match: { isDeleted: { $eq: false } } },
+    {
+      $project: {
+        username: 1,
+        fullName: 1,
+        age: 1,
+        email: 1,
+        address: 1,
+      },
+    },
   ]);
   return result;
 };
@@ -63,9 +71,17 @@ const getAllOrdersFromDb = async (userId: number) => {
 const getTotalPriceOfOrdersFromDb = async (userId: number) => {
   const result = await User.aggregate([
     {
+      $match: {
+        userId: userId,
+      },
+    },
+    {
+      $unwind: '$orders',
+    },
+    {
       $group: {
-        _id: userId,
-        totalPrice: { $sum: { $sum: '$orders.price' } },
+        _id: '$userId',
+        totalPrice: { $sum: '$orders.price' },
       },
     },
   ]);
