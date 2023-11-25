@@ -1,5 +1,11 @@
 import z from 'zod';
 
+export const OrderDataValidation = z.object({
+  productName: z.string(),
+  price: z.number(),
+  quantity: z.number(),
+});
+
 const UsersValidationSchema = z.object({
   userId: z.number(),
   username: z

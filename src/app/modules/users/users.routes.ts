@@ -8,5 +8,6 @@ router.get('/api/users', userControllers.getAllUser);
 router.get('/api/users/:userId', userControllers.getSingleUser);
 router.put('/api/users/:userId', userControllers.updateSingleUser);
 router.delete('/api/users/:userId', userControllers.deleteUser);
-
+router.put('/api/users/:userId/orders', userControllers.addOrder);
+router.get('/api/users/:userId/orders', userControllers.getAllOrders);
 export const userRoutes = router;
