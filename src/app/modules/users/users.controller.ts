@@ -25,8 +25,8 @@ const createUser = async (req: Request, res: Response) => {
 };
 
 const getAllUser = async (req: Request, res: Response) => {
-  const result = await userServices.getAllUserFromDb();
   try {
+    const result = await userServices.getAllUserFromDb();
     res.status(200).json({
       status: true,
       message: 'Users retrived successfully',
@@ -42,45 +42,45 @@ const getAllUser = async (req: Request, res: Response) => {
 };
 
 const getSingleUser = async (req: Request, res: Response) => {
-  const { userId } = req.params;
+  try {
+    const { userId } = req.params;
 
-  const isUserExists = await User.isUserExists(userId);
-  if (isUserExists) {
-    try {
+    const isUserExists = await User.isUserExists(userId);
+    if (isUserExists) {
       const result = await userServices.getSingleUserFromDb(Number(userId));
       res.status(200).json({
         status: true,
         message: 'User retrived successfully',
         data: result,
       });
-    } catch (err) {
+    } else {
       res.status(404).json({
         success: false,
-        message: 'Something went wrong',
+        message: 'User not found',
         error: {
           code: 404,
-          description: err,
+          description: 'User not found!',
         },
       });
     }
-  } else {
+  } catch (err) {
     res.status(404).json({
       success: false,
-      message: 'User not found',
+      message: 'Something went wrong',
       error: {
         code: 404,
-        description: 'User not found!',
+        description: err,
       },
     });
   }
 };
 
 const updateSingleUser = async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  const userData = req.body;
-  const isUserExists = await User.isUserExists(userId);
-  if (isUserExists) {
-    try {
+  try {
+    const { userId } = req.params;
+    const userData = req.body;
+    const isUserExists = await User.isUserExists(userId);
+    if (isUserExists) {
       const userDataValidation = UsersValidationSchema.parse(userData);
       const result = await userServices.updateSingleUserIntoDb(
         Number(userId),
@@ -89,74 +89,77 @@ const updateSingleUser = async (req: Request, res: Response) => {
 
       // find new updated user to send in the response data
       if (result) {
-        const findUpdatedUser = await userServices.getSingleUserFromDb(
-          Number(userId),
-        );
+        const findUpdatedUser = await User.findOne(result._id, {
+          password: 0,
+          orders: 0,
+          isDeleted: 0,
+        });
         res.status(200).json({
           status: true,
           message: 'User updated successfully',
           data: findUpdatedUser,
         });
       }
-    } catch (err) {
+    } else {
       res.status(404).json({
         success: false,
-        message: 'Something went wrong',
+        message: 'User not found',
         error: {
           code: 404,
-          description: err,
+          description: 'User not found!',
         },
       });
     }
-  } else {
+  } catch (err) {
     res.status(404).json({
       success: false,
-      message: 'User not found',
+      message: 'Something went wrong',
       error: {
         code: 404,
-        description: 'User not found!',
+        description: err,
       },
     });
   }
 };
 
 const deleteUser = async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  // check if the user is exists or not
-  const isUserExists = await User.isUserExists(userId);
-  if (isUserExists) {
-    const result = await userServices.deleteUserFromDb(Number(userId));
-    try {
+  try {
+    const { userId } = req.params;
+    // check if the user is exists or not
+    const isUserExists = await User.isUserExists(userId);
+    if (isUserExists) {
+      const result = await userServices.deleteUserFromDb(Number(userId));
+
       res.status(200).json({
         status: true,
         message: 'Users deleted successfully',
         data: result,
       });
-    } catch (error) {
-      res.status(500).json({
-        status: false,
-        message: 'Something went wrong!',
-        data: error,
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
       });
     }
-  } else {
-    res.status(404).json({
-      success: false,
-      message: 'User not found',
-      error: {
-        code: 404,
-        description: 'User not found!',
-      },
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: 'Something went wrong!',
+      data: error,
     });
   }
 };
 const addOrder = async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  const orderData = req.body;
-  // check if the user is exist or not
-  const isUserExists = await User.isUserExists(userId);
-  if (isUserExists) {
-    try {
+  try {
+    const { userId } = req.params;
+    const orderData = req.body;
+    // check if the user is exist or not
+    const isUserExists = await User.isUserExists(userId);
+    if (isUserExists) {
       // orderdata validation using zod
       const orderValidationData = OrderDataValidation.parse(orderData);
       const result = await userServices.addOrderIntoDb(
@@ -168,68 +171,68 @@ const addOrder = async (req: Request, res: Response) => {
         message: 'Order added successfully',
         data: result,
       });
-    } catch (err) {
+    } else {
       res.status(404).json({
         success: false,
-        message: 'Something went wrong',
+        message: 'User not found',
         error: {
           code: 404,
-          description: err,
+          description: 'User not found!',
         },
       });
     }
-  } else {
+  } catch (err) {
     res.status(404).json({
       success: false,
-      message: 'User not found',
+      message: 'Something went wrong',
       error: {
         code: 404,
-        description: 'User not found!',
+        description: err,
       },
     });
   }
 };
 
 const getAllOrders = async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  // check if the user is exist or not
-  const isUserExists = await User.isUserExists(userId);
-  if (isUserExists) {
-    try {
+  try {
+    const { userId } = req.params;
+    // check if the user is exist or not
+    const isUserExists = await User.isUserExists(userId);
+    if (isUserExists) {
       const result = await userServices.getAllOrdersFromDb(Number(userId));
       res.status(200).json({
         status: true,
         message: 'Order retrived successfully',
         data: result,
       });
-    } catch (err) {
+    } else {
       res.status(404).json({
         success: false,
-        message: 'Something went wrong',
+        message: 'User not found',
         error: {
           code: 404,
-          description: err,
+          description: 'User not found!',
         },
       });
     }
-  } else {
+  } catch (err) {
     res.status(404).json({
       success: false,
-      message: 'User not found',
+      message: 'Something went wrong',
       error: {
         code: 404,
-        description: 'User not found!',
+        description: err,
       },
     });
   }
 };
 
 const getTotalPriceOfOrders = async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  // check if the user is exist or not
-  const isUserExists = await User.isUserExists(userId);
-  if (isUserExists) {
-    try {
+  try {
+    const { userId } = req.params;
+    // check if the user is exist or not
+    const isUserExists = await User.isUserExists(userId);
+    if (isUserExists) {
       const result = await userServices.getTotalPriceOfOrdersFromDb(
         Number(userId),
       );
@@ -238,23 +241,23 @@ const getTotalPriceOfOrders = async (req: Request, res: Response) => {
         message: 'Total price retrived successfully',
         data: result,
       });
-    } catch (err) {
+    } else {
       res.status(404).json({
         success: false,
-        message: 'Something went wrong',
+        message: 'User not found',
         error: {
           code: 404,
-          description: err,
+          description: 'User not found!',
         },
       });
     }
-  } else {
+  } catch (err) {
     res.status(404).json({
       success: false,
-      message: 'User not found',
+      message: 'Something went wrong',
       error: {
         code: 404,
-        description: 'User not found!',
+        description: err,
       },
     });
   }
